@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .chat-container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #fff;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h2>Financial Chatbot</h2>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="query" placeholder="Ask a financial question...">
+        <button onclick="sendQuery()">Send</button>
+    </div>
+    <script>
+        function sendQuery() {
+            let query = document.getElementById("query").value;
+            if (!query) return;
+            document.getElementById("chat-box").innerHTML += `<p><strong>You:</strong> ${query}</p>`;
+            
+            fetch("/query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query })
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("chat-box").innerHTML += `<div>${html}</div>`;
+                document.getElementById("query").value = "";
+            });
+        }
+    </script>
+</body>
+</html>
