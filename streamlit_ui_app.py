@@ -107,8 +107,8 @@ query = st.text_input("Enter your financial query:")
 company = st.text_input("Filter by company (optional):")
 
 if st.button("Search"):
-    if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
 
 if query:
         st.session_state.chat_history.append(("user", query))
