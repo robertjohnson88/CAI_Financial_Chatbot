@@ -70,15 +70,16 @@ save_to_faiss(embeddings, df)
 global index, metadata
 index, metadata = load_faiss()
 
-# Streamlit UI - Chatbot style
+# Streamlit UI - Improved Chatbox Style
 st.markdown("""
     <style>
-        .chat-container {
-            max-width: 700px;
-            margin: auto;
-            padding: 20px;
+        .chatbox-container {
+            border: 2px solid #007bff;
+            padding: 15px;
             border-radius: 10px;
             background-color: #f8f9fa;
+            max-width: 700px;
+            margin: auto;
         }
         .user-message {
             background-color: #d1e7fd;
@@ -92,47 +93,38 @@ st.markdown("""
             border-radius: 10px;
             margin-bottom: 5px;
         }
-        .result-box {
-            background: white;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0px 0px 10px gray;
-            margin-top: 10px;
-        }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("<h3>Financial Data Retrieval Chatbot</h3>", unsafe_allow_html=True)
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
-query = st.text_input("Enter your financial query:")
-company = st.text_input("Filter by company (optional):")
+with st.container():
+    query = st.text_input("Enter your financial query:")
+    company = st.text_input("Filter by company (optional):")
+    if st.button("Search"):
+        if "chat_history" not in st.session_state:
+            st.session_state.chat_history = []
+        if query:
+            st.session_state.chat_history.insert(0, ("user", query))
+            results = retrieve_info(query, model, index, metadata, company=company)
+            
+            if results:
+                response = "<strong>Query Results:</strong><br><table><tr><th>Year</th><th>Company</th><th>Category</th><th>Revenue</th><th>Net Income</th></tr>"
+                for res in results:
+                    response += f"<tr><td>{res['Year']}</td><td>{res['Company']}</td><td>{res['Category']}</td><td>{res['Revenue']}</td><td>{res['Net Income']}</td></tr>"
+                response += "</table>"
+            else:
+                response = "<strong>No results found.</strong>"
+            
+            st.session_state.chat_history.insert(1, ("bot", response))
+            st.rerun()
 
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-if st.button("Search"): 
-    if query:
-        st.session_state.chat_history.append(("user", query))
-        results = retrieve_info(query, model, index, metadata, company=company)
-        
-        if results:
-            response = "<div class='result-box'><strong>Query Results:</strong><br><table><tr><th>Year</th><th>Company</th><th>Category</th><th>Revenue</th><th>Net Income</th></tr>"
-            for res in results:
-                response += f"<tr><td>{res['Year']}</td><td>{res['Company']}</td><td>{res['Category']}</td><td>{res['Revenue']}</td><td>{res['Net Income']}</td></tr>"
-            response += "</table></div>"
-        else:
-            response = "<div class='result-box'><strong>No results found.</strong></div>"
-        
-        st.session_state.chat_history.append(("bot", response))
-        st.rerun()
-
-# Display chat history below the search button
+# Display chat history
+st.markdown('<div class="chatbox-container">', unsafe_allow_html=True)
 for chat in st.session_state.chat_history:
     role, text = chat
     if role == "user":
         st.markdown(f'<div class="user-message">**User:** {text}</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="bot-message">**Bot:** {text}</div>', unsafe_allow_html=True)
-
 st.markdown('</div>', unsafe_allow_html=True)
