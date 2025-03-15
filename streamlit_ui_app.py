@@ -112,7 +112,6 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 if st.button("Search"): 
-            st.session_state.chat_history = []
 
 if query:
         st.session_state.chat_history.append(("user", query))
