@@ -8,7 +8,9 @@ import streamlit as st
 # Load the dataset
 def load_dataset(csv_path):
     df = pd.read_csv(csv_path)
-    df.fillna(value='', inplace=True, downcast='infer')  # Handle missing values
+    df.fillna(value='', inplace=True)
+    for col in df.select_dtypes(include=['float64']).columns:
+        df[col] = df[col].astype(str)  # Handle missing values
     return df
 
 # Convert financial data to text format for embedding
