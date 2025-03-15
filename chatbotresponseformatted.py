@@ -133,6 +133,6 @@ if st.button("Search"):
             response = "<div class='result-box'><strong>No results found.</strong></div>"
         
         st.session_state.chat_history.append(("bot", response))
-        st.experimental_rerun()
+        st.rerun()
 
 st.markdown('</div>', unsafe_allow_html=True)
