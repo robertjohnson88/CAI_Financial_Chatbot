@@ -43,6 +43,10 @@ def extract_year(query):
 
 # Retrieve similar financial records
 def retrieve_info(query, model, index, metadata, top_k=5, company=None):
+    irrelevant_keywords = ["capital", "president", "weather", "movie", "country"]
+    if any(word in query.lower() for word in irrelevant_keywords):
+        return "I'm here to assist with financial data. Please ask relevant financial questions."
+
     year = extract_year(query)
     query_embedding = model.encode([query])
     distances, indices = index.search(query_embedding, top_k)
@@ -108,7 +112,9 @@ with st.container():
             st.session_state.chat_history.insert(0, ("user", query))
             results = retrieve_info(query, model, index, metadata, company=company)
             
-            if results:
+            if isinstance(results, str):
+                response = f"<strong>Bot:</strong> {results}"
+            elif results:
                 response = "<strong>Query Results:</strong><br><table><tr><th>Year</th><th>Company</th><th>Category</th><th>Revenue</th><th>Net Income</th></tr>"
                 for res in results:
                     response += f"<tr><td>{res['Year']}</td><td>{res['Company']}</td><td>{res['Category']}</td><td>{res['Revenue']}</td><td>{res['Net Income']}</td></tr>"
