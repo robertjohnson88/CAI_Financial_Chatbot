@@ -73,7 +73,7 @@ def index_page():
 def query_api():
     data = request.json
     query = data.get("query", "")
-    company = data.get("company", "NVDA")
+    company = data.get("company", None)
     year = data.get("year", None)
     #year = data.get("year", "2018")
     
