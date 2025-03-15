@@ -100,6 +100,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+st.markdown("<h3>CAI Assignment 2 - Group 87</h3>", unsafe_allow_html=True)
 st.markdown("<h3>Financial Data Retrieval Chatbot</h3>", unsafe_allow_html=True)
 
 with st.container():
