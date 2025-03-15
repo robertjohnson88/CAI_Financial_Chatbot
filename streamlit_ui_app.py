@@ -1,6 +1,7 @@
 import pandas as pd
 import faiss
 import numpy as np
+import re
 from sentence_transformers import SentenceTransformer
 import streamlit as st
 
@@ -33,8 +34,14 @@ def load_faiss(index_path="financial_index.faiss", metadata_path="metadata.npy")
     metadata = np.load(metadata_path, allow_pickle=True)
     return index, metadata
 
+# Extract year from query
+def extract_year(query):
+    match = re.search(r'\b(19\d{2}|20\d{2})\b', query)
+    return match.group(0) if match else None
+
 # Retrieve similar financial records
-def retrieve_info(query, model, index, metadata, top_k=5, company=None, year=None):
+def retrieve_info(query, model, index, metadata, top_k=5, company=None):
+    year = extract_year(query)
     query_embedding = model.encode([query])
     distances, indices = index.search(query_embedding, top_k)
     results = [metadata[i] for i in indices[0] if i < len(metadata)]
@@ -61,20 +68,66 @@ save_to_faiss(embeddings, df)
 global index, metadata
 index, metadata = load_faiss()
 
-# Streamlit UI
-st.title("Financial Data Retrieval Chatbot")
+# Streamlit UI - Chatbot style
+st.markdown("""
+    <style>
+        .chat-container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+        .user-message {
+            background-color: #d1e7fd;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        .bot-message {
+            background-color: #e2e3e5;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+        .result-box {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0px 0px 10px gray;
+            margin-top: 10px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h3>Financial Data Retrieval Chatbot</h3>", unsafe_allow_html=True)
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
 query = st.text_input("Enter your financial query:")
 company = st.text_input("Filter by company (optional):")
-year = st.text_input("Filter by year (optional):")
 
 if st.button("Search"):
-    results = retrieve_info(query, model, index, metadata, company=company, year=year)
-    
-    if results:
-        for res in results:
-            st.write(f"**Company:** {res['Company']}, **Year:** {res['Year']}")
-            st.write(f"**Market Cap:** {res['Market Cap(in B USD)']}B, **Revenue:** {res['Revenue']}, **Net Income:** {res['Net Income']}")
-            st.write(f"**EPS:** {res['Earning Per Share']}")
-            st.write("---")
+    if query:
+        st.session_state.chat_history.append(("user", query))
+        results = retrieve_info(query, model, index, metadata, company=company)
+        
+        if results:
+            response = "<div class='result-box'><strong>Query Results:</strong><br><table><tr><th>Year</th><th>Company</th><th>Category</th><th>Revenue</th><th>Net Income</th></tr>"
+            for res in results:
+                response += f"<tr><td>{res['Year']}</td><td>{res['Company']}</td><td>{res['Category']}</td><td>{res['Revenue']}</td><td>{res['Net Income']}</td></tr>"
+            response += "</table></div>"
+        else:
+            response = "<div class='result-box'><strong>No results found.</strong></div>"
+        
+        st.session_state.chat_history.append(("bot", response))
+        st.rerun()
+
+# Display chat history below the search button
+for chat in st.session_state.chat_history:
+    role, text = chat
+    if role == "user":
+        st.markdown(f'<div class="user-message">**User:** {text}</div>', unsafe_allow_html=True)
     else:
-        st.write("No results found.")
+        st.markdown(f'<div class="bot-message">**Bot:** {text}</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
