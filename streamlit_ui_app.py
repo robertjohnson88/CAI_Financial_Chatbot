@@ -121,6 +121,9 @@ with st.container():
 
 # Display chat history
 st.markdown('<div class="chatbox-container">', unsafe_allow_html=True)
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
 for chat in st.session_state.chat_history:
     role, text = chat
     if role == "user":
