@@ -133,7 +133,7 @@ if "chat_history" not in st.session_state:
 for chat in st.session_state.chat_history:
     role, text = chat
     if role == "user":
-        st.markdown(f'<div class="user-message">**User:** {text}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="user-message"><strong>User:  </strong> {text}</div>', unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="bot-message">**Bot:** {text}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="bot-message"><strong>Bot:  </strong> {text}</div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
