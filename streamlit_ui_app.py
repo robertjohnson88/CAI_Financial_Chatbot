@@ -44,7 +44,7 @@ def extract_year(query):
 # Retrieve similar financial records
 def retrieve_info(query, model, index, metadata, top_k=5, company=None):
     irrelevant_keywords = ["capital", "president", "weather", "movie", "country"]
-    if any(word in query.lower() for word in irrelevant_keywords):
+    if any(re.search(r'' + word + r'', query.lower()) for word in irrelevant_keywords):
         return "I'm here to assist with financial data. Please ask relevant financial questions."
 
     year = extract_year(query)
