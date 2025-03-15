@@ -106,8 +106,10 @@ st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 query = st.text_input("Enter your financial query:")
 company = st.text_input("Filter by company (optional):")
 
-if st.button("Search"):
-        if "chat_history" not in st.session_state:
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+if st.button("Search"): 
             st.session_state.chat_history = []
 
 if query:
