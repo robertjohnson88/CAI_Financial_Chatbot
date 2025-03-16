@@ -91,6 +91,9 @@ def retrieve_info(query, model, index, metadata, bm25, tokenized_corpus, top_k=1
     if is_irrelevant_question(query):
         return "I'm here to assist with financial data. Please ask relevant financial questions."+"<strong> Confidence: 0.00</strong>"
     
+    if is_valid_query(query):
+        return "Restricted or unsafe terms was used. Please ask relevant financial questions."+"<strong> Confidence: 0.00</strong>"
+    
     year = extract_year(query)
     company_list = list(set([entry['Company'] for entry in metadata]))
     company = extract_company(query, company_list)
