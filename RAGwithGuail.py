@@ -9,9 +9,9 @@ from collections import defaultdict
 
 def load_dataset(csv_path):
     df = pd.read_csv(csv_path)
-    df.fillna(value='', inplace=True)
     for col in df.select_dtypes(include=['float64']).columns:
         df[col] = df[col].astype(str)
+    df.fillna('', inplace=True)
     return df
 
 def prepare_text_data(df):
@@ -44,7 +44,6 @@ def is_irrelevant_question(query):
 def compute_confidence(faiss_scores, bm25_scores):
     faiss_confidence = (1 - (faiss_scores / np.max(faiss_scores))) if len(faiss_scores) > 0 else np.array([])
     bm25_confidence = bm25_scores / np.max(bm25_scores) if np.max(bm25_scores) > 0 else np.array([])
-    
     combined_confidence = (faiss_confidence + bm25_confidence) / 2
     return combined_confidence
 
@@ -80,7 +79,6 @@ def retrieve_info(query, model, index, metadata, bm25, tokenized_corpus, top_k=5
     
     return sorted(combined_results, key=lambda x: x.get('confidence', 0), reverse=True)
 
-# Load model and data
 csv_path = "./data/financial_statements.csv"
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
@@ -94,7 +92,6 @@ metadata = df.to_dict(orient="records")
 
 bm25, tokenized_corpus = compute_bm25_index(text_data)
 
-# Streamlit UI - Improved Chatbox Style
 st.markdown("<h3>Financial Data Retrieval Chatbot</h3>", unsafe_allow_html=True)
 
 query = st.text_input("Enter your financial query:")

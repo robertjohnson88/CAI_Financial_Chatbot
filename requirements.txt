@@ -5,3 +5,6 @@ numpy
 sentence-transformers
 streamlit
 rank_bm25
+torch 
+torchvision 
+torchaudio --index-url https://download.pytorch.org/whl/cpu
