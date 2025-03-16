@@ -64,10 +64,10 @@ def extract_company(query, company_list):
     return None
 
 # Validate user query for security and relevance
-def is_valid_query(query):
+def is_invalid_query(query):
     """Checks if the query contains restricted or unsafe terms."""
     blocked_keywords = ["hack", "exploit", "illegal", "scam", "cheat"]
-    return not any(word in query.lower() for word in blocked_keywords)
+    return any(word in query.lower() for word in blocked_keywords)
 
 # Check if the user query is irrelevant
 def is_irrelevant_question(query):
@@ -91,7 +91,7 @@ def retrieve_info(query, model, index, metadata, bm25, tokenized_corpus, top_k=1
     if is_irrelevant_question(query):
         return "I'm here to assist with financial data. Please ask relevant financial questions."+"<strong> Confidence: 0.00</strong>"
     
-    if is_valid_query(query):
+    if is_invalid_query(query):
         return "Restricted or unsafe terms was used. Please ask relevant financial questions."+"<strong> Confidence: 0.00</strong>"
     
     year = extract_year(query)
