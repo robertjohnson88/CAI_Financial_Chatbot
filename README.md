@@ -3,9 +3,9 @@
 ## Financial Chatbot
 
 ### Team Members:
+- **Robert Johnson S** (2023aa05813)
 - **Sathish Kumar .S** (2023aa05698)
 - **Sathish N M** (2023aa05812)
-- **Robert Johnson S** (2023aa05813)
 - **Ritesh Ranjan** (2023aa05888)
 - **Vibhav Raman** (2023aa05805)
 
